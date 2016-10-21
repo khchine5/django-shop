@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+These URL routings are used by the example `polymorphic` as found in the django-SHOP's tutorials.
+The difference here is that we added a special serializer class to add smart phones with their
+variations to the cart.
+"""
 from __future__ import unicode_literals
 
 from django.conf.urls import url

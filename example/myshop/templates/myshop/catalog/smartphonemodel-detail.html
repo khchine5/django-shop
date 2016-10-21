@@ -22,6 +22,10 @@
 			<table class="table table-bordered">
 				<tbody class="table-striped">
 					<tr>
+						<td>{% trans "Manufacturer" %}</td>
+						<td>{{ product.manufacturer }}</td>
+					</tr>
+					<tr>
 						<td>{% trans "Battery" %}</td>
 						<td>{{ product.get_battery_type_display }} ({{ product.battery_capacity }} mAh)</td>
 					</tr>
@@ -61,7 +65,7 @@
 	</div>
 </div>
 
-{% addtoblock "js" %}<script id="scrollpanel/bsp-scrollpanel.tmpl.html" type="text/ng-template">
+<script id="scrollpanel/bsp-scrollpanel.tmpl.html" type="text/ng-template">
 	<panel-control class="left ">
 		<span class="glyphicon glyphicon-chevron-left"></span>
 	</panel-control>
@@ -69,6 +73,6 @@
 	<panel-control class="right">
 		<span class="glyphicon glyphicon-chevron-right"></span>
 	</panel-control>
-</script>{% endaddtoblock %}
+</script>
 
 {% endblock main-content %}
