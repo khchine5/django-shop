@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
 import requests
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import BytesIO as StringIO
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 from django.utils.six.moves import input
+from shop import __version__
 try:
     import czipfile as zipfile
 except ImportError:
@@ -17,8 +22,7 @@ except ImportError:
 class Command(BaseCommand):
     help = _("Initialize the workdir to run the demo of myshop.")
     download_url = 'http://downloads.django-shop.org/django-shop-workdir_{tutorial}-{version}.zip'
-    version = '0.9.2'
-    pwd = 'z7xv'
+    pwd = b'z7xv'
 
     def add_arguments(self, parser):
         parser.add_argument('--noinput', '--no-input',
@@ -31,22 +35,24 @@ class Command(BaseCommand):
     def handle(self, verbosity, *args, **options):
         self.set_options(**options)
 
-        mesg = ("\nThis will overwrite your workdir and install a new database for the djangoSHOP demo: {tutorial}\n"
+        mesg = ("\nThis will overwrite your workdir and install a new database for the django-SHOP demo: {tutorial}\n"
                 "Are you sure you want to do this?\n\n"
                 "Type 'yes' to continue, or 'no' to cancel: ").format(tutorial=settings.SHOP_TUTORIAL)
         if self.interactive and input(mesg) != 'yes':
             raise CommandError("Collecting static files cancelled.")
 
-        msg = "Downloading and extracting workdir. Please wait ..."
-        self.stdout.write(msg)
-        download_url = self.download_url.format(tutorial=settings.SHOP_TUTORIAL, version=self.version)
+        extract_to = os.path.join(settings.WORK_DIR, os.pardir)
+        msg = "Downloading workdir and extracting to {}. Please wait ..."
+        self.stdout.write(msg.format(extract_to))
+        download_url = self.download_url.format(tutorial=settings.SHOP_TUTORIAL, version=__version__)
         response = requests.get(download_url, stream=True)
+        zip_ref = zipfile.ZipFile(StringIO(response.content))
         try:
-            zip_ref = zipfile.ZipFile(StringIO.StringIO(response.content))
-            zip_ref.extractall(settings.PROJECT_ROOT, pwd=self.pwd)
+            zip_ref.extractall(extract_to, pwd=self.pwd)
         finally:
             zip_ref.close()
 
         call_command('migrate')
-        fixture = '../workdir/{tutorial}/fixtures/myshop.json'.format(tutorial=settings.SHOP_TUTORIAL)
-        call_command('loaddata', fixture)
+        fixture = '{workdir}/{tutorial}/fixtures/myshop.json'
+        call_command('loaddata', fixture.format(workdir=settings.WORK_DIR,
+                                                tutorial=settings.SHOP_TUTORIAL))
