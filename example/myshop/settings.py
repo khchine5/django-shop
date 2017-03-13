@@ -25,7 +25,8 @@ BASE_DIR = os.path.dirname(__file__)
 SHOP_TUTORIAL = os.environ.get('DJANGO_SHOP_TUTORIAL')
 if SHOP_TUTORIAL is None:
     raise ImproperlyConfigured("Environment variable DJANGO_SHOP_TUTORIAL is not set")
-if SHOP_TUTORIAL not in ('commodity', 'i18n_commodity', 'smartcard', 'i18n_smartcard', 'polymorphic',):
+if SHOP_TUTORIAL not in ['commodity', 'i18n_commodity', 'smartcard', 'i18n_smartcard',
+                         'i18n_polymorphic', 'polymorphic']:
     msg = "Environment variable DJANGO_SHOP_TUTORIAL has an invalid value `{}`"
     raise ImproperlyConfigured(msg.format(SHOP_TUTORIAL))
 
@@ -113,7 +114,7 @@ INSTALLED_APPS = [
     'shop_stripe',
     'myshop',
 ]
-if SHOP_TUTORIAL in ('i18n_commodity', 'i18n_smartcard', 'polymorphic'):
+if SHOP_TUTORIAL in ['i18n_commodity', 'i18n_smartcard', 'i18n_polymorphic']:
     INSTALLED_APPS.append('parler')
 
 MIDDLEWARE_CLASSES = [
@@ -156,7 +157,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en'
 
-if SHOP_TUTORIAL in ('i18n_smartcard', 'i18n_commodity', 'polymorphic'):
+if SHOP_TUTORIAL in ['i18n_smartcard', 'i18n_commodity', 'i18n_polymorphic']:
     USE_I18N = True
 
     LANGUAGES = (
@@ -419,7 +420,11 @@ CMS_PLACEHOLDER_CONF = {
     },
     'Main Content': {
         'plugins': ['BootstrapContainerPlugin', 'BootstrapJumbotronPlugin'],
-        'parent_classes': {'BootstrapContainerPlugin': None, 'BootstrapJumbotronPlugin': None},
+        'parent_classes': {
+            'BootstrapContainerPlugin': None,
+            'BootstrapJumbotronPlugin': None,
+            'TextLinkPlugin': ['TextPlugin', 'AcceptConditionPlugin'],
+        },
         'glossary': CACSCADE_WORKAREA_GLOSSARY,
     },
     'Static Footer': {
@@ -439,7 +444,6 @@ CMSPLUGIN_CASCADE_PLUGINS = (
 )
 
 CMSPLUGIN_CASCADE = {
-    'fontawesome_css_url': 'node_modules/font-awesome/css/font-awesome.css',
     'link_plugin_classes': (
         'shop.cascade.plugin_base.CatalogLinkPluginBase',
         'cmsplugin_cascade.link.plugin_base.LinkElementMixin',
@@ -547,7 +551,7 @@ HAYSTACK_ROUTERS = ('shop.search.routers.LanguageRouter',)
 SHOP_VALUE_ADDED_TAX = Decimal(19)
 SHOP_DEFAULT_CURRENCY = 'EUR'
 SHOP_PRODUCT_SUMMARY_SERIALIZER = 'myshop.serializers.ProductSummarySerializer'
-if SHOP_TUTORIAL == 'polymorphic':
+if SHOP_TUTORIAL in ['i18n_polymorphic', 'polymorphic']:
     SHOP_CART_MODIFIERS = ['myshop.polymorphic_modifiers.MyShopCartModifier']
 else:
     SHOP_CART_MODIFIERS = ['shop.modifiers.defaults.DefaultCartModifier']
@@ -568,7 +572,7 @@ SHOP_ORDER_WORKFLOWS = [
     'shop.payment.defaults.CancelOrderWorkflowMixin',
     'shop_stripe.payment.OrderWorkflowMixin',
 ]
-if SHOP_TUTORIAL == 'polymorphic':
+if SHOP_TUTORIAL in ['i18n_polymorphic', 'polymorphic']:
     SHOP_ORDER_WORKFLOWS.append('shop.shipping.delivery.PartialDeliveryWorkflowMixin')
 else:
     SHOP_ORDER_WORKFLOWS.append('shop.shipping.defaults.CommissionGoodsWorkflowMixin')

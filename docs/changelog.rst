@@ -40,6 +40,24 @@ Changelog for django-SHOP
   more results from the server.
 * Changed all Cascade plugins to follow the new API introduced in **djangocms-cascade** version 0.12.
 * Directive ``shop-product-filter`` must be member of a ``<form ...>`` element.
+* Unified the plugins **ShippingAddressFormPlugin** and **BillingAddressFormPlugin** into one plugin
+  named **CheckoutAddressPlugin**, where the merchant can choose between the shipping- or billing
+  form.
+* Refactored :class:`shop.forms.checkout.AddressForm` and fixed minor bugs when editing multiple
+  addresses.
+* In address models, replaced ``CharField`` for ``country`` against a special ``CountryField``.
+* Change value of ``BaseShippingAddress.address_type`` to ``shipping`` and
+  ``BaseBillingAddress.address_type`` to ``billing``.
+* Method ``shop.models.order.OrderManager.get_latest_url()`` falls back to
+  ``reverse('shop-order-last')`` if no such page with ID ``shop-order-last`` was found in the CMS.
+* Use menu_title instead of page title for link and tooltip content.
+* In ``DialogForm``, field ``plugin_id`` is not required anymore.
+* After a new customer recognized himself, the signal ``customer_recognized`` is fired so that
+  other apps can act upon.
+* Unified ``ProductCommonSerializer``, ``ProductSummarySerializer`` and ``ProductDetailSerializer``
+  into a single ``ProductSerializer``, which acts as default for the ``ProductListView`` and
+  ``ProductRetrieveView``.
+* Dependency to **djangocms-cascade** is optional now.
 
 
 0.9.3
@@ -56,7 +74,7 @@ Changelog for django-SHOP
 * All Cascade plugins use ``GlossaryField`` instead of a list of ``PartialFormField`` s. This is
   much more "Djangonic", but requires djangocms-cascade version 0.11 or later.
 * All urlpatterns are compatible with configurations adding a final / to the request URL.
-* The URL for accessing an Order object, now uses the order number instead of it's primary key.
+* The URL for accessing an Order object, now uses the order number instead of its primary key.
 
 
 0.9.2

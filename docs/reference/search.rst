@@ -234,8 +234,8 @@ Search View
 ===========
 
 In the Search View we link the serializer together with a `djangoCMS apphook`_. This
-``ProductSearchApp`` can be added to the same file, we already used to declare the
-``ProductsListApp`` used to render the catalog view:
+``CatalogSearchApp`` can be added to the same file, we already used to declare the
+``CatalogListApp`` used to render the catalog view:
 
 .. code-block:: python
 	:caption: myshop/cms_apps.py
@@ -244,11 +244,13 @@ In the Search View we link the serializer together with a `djangoCMS apphook`_. 
 	from cms.app_base import CMSApp
 	from cms.apphook_pool import apphook_pool
 
-	class ProductSearchApp(CMSApp):
-	    name = _("Search")
-	    urls = ['myshop.urls.search']
+	class CatalogSearchApp(CMSApp):
+	    name = _("Catalog Search")
 
-	apphook_pool.register(ProductSearchApp)
+	    def get_urls(self, page=None, language=None, **kwargs):
+	        return ['myshop.urls.search']
+
+	apphook_pool.register(CatalogSearchApp)
 
 as all apphooks, it requires a file defining its urlpatterns:
 
@@ -287,7 +289,7 @@ As **Application**, select "*Search*". This selects the apphook we created in th
 
 Then save the page, change into **Structure** mode and locate the placeholder named
 **Main Content**. Add a Bootstrap Container plugin, followed by a Row and then a Column plugin. As
-the child of this column, chose the **Search Results** plugin from section **Shop**.
+the child of this column, choose the **Search Results** plugin from section **Shop**.
 
 Finally publish the page and enter some text into the search field. It should render a list of
 found products.
@@ -321,18 +323,17 @@ following entry:
 
 	from django.conf.urls import url
 	from shop.search.views import CMSPageCatalogWrapper
-	from myshop.serializers import CatalogSearchSerializer, ProductSummarySerializer
+	from myshop.serializers import CatalogSearchSerializer
 
 	urlpatterns = [
 	    url(r'^$', CMSPageCatalogWrapper.as_view(
 	        search_serializer_class=CatalogSearchSerializer,
-	        model_serializer_class=ProductSummarySerializer,
 	    )),
 	    # other patterns
 	]
 
 The view :class'`shop.search.views.CMSPageCatalogWrapper` is a functional wrapper around the
-catalog's products list view and the search view. Depending on weather the request contains a
+catalog's products list view and the search view. Depending on whether the request contains a
 search query starting with ``q=<search-term>``, either the search view or the products list view
 is invoked.
 
@@ -341,11 +342,11 @@ catalog's products list, and hence must route onto the same view class. However 
 catalog's list view classes have different bases and a completely different implementation, that
 this wrapper is required.
 
-The ``CatalogSearchSerializer`` used here is very similar to the ``ProductSearchSerializer``, we have
-seen in the previous section. The only difference is, that instead of the ``search_media`` field
-is uses the ``catalog_media`` field, which renders the result items media in a layout appropriate
-for the catalog's list view. Therefore this kind of search, normally is used in combination with
-auto-completion, because here we reuse the same layout for the product's list view.
+The ``CatalogSearchSerializer`` used here is very similar to the ``ProductSearchSerializer``, we
+have seen in the previous section. The only difference is, that instead of the ``search_media``
+field is uses the ``catalog_media`` field, which renders the result items media in a layout
+appropriate for the catalog's list view. Therefore this kind of search, normally is used in
+combination with auto-completion, because here we reuse the same layout for the product's list view.
 
 
 The Client Side
