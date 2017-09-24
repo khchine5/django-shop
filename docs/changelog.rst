@@ -4,12 +4,16 @@
 Changelog for django-SHOP
 =========================
 
+0.11.2
+======
+* Do not render buttons and links related to the watch-list, when it is not available.
+
 
 0.11.1
 ======
 
 * Fix migration ``0007_notification`` to handle field ``mail_to`` correctly.
-* Allo transition to cancel order only for special targets.
+* Allow transition to cancel order only for special targets.
 
 
 0.11
@@ -59,7 +63,6 @@ Changelog for django-SHOP
 * Fix #623: Template ``auth/register-user.html`` did not validate properly, when Reset password was checked.
 * Added AngularJS filter ``range`` to emulate enumerations in JavaScript.
 * Fallback to hard-coded URL if CMS page for "Continue Shopping" is missing.
-
 
 
 0.10.2
